@@ -1,0 +1,99 @@
+# =============================================================================
+# OBAF Phase 1 — GICS 섹터별 가중치 및 품질 게이트
+# (원본 병목 섹터 프레임워크 보존 + S&P500/NDX100 전체 유니버스 확장)
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# GICS 11개 섹터 가중치 (yfinance 반환명 포함)
+# ---------------------------------------------------------------------------
+gics_sector_weights:
+  "Energy":                  1.3
+  "Utilities":               1.3
+  "Materials":               1.2
+  "Basic Materials":         1.2   # yfinance alias
+  "Information Technology":  1.2
+  "Technology":              1.2   # yfinance alias
+  "Communication Services":  1.1
+  "Industrials":             1.1
+  "Health Care":             1.0
+  "Healthcare":              1.0   # yfinance alias
+  "Financial Services":      1.0
+  "Financials":              1.0   # yfinance alias
+  "Consumer Discretionary":  0.9
+  "Consumer Cyclical":       0.9   # yfinance alias
+  "Consumer Staples":        0.9
+  "Consumer Defensive":      0.9   # yfinance alias
+  "Real Estate":             0.9
+  "Unknown":                 0.8
+
+# ---------------------------------------------------------------------------
+# GICS 섹터별 Phase 1 품질 게이트 (최소 기준)
+# ---------------------------------------------------------------------------
+gics_quality_gates:
+  "Energy":
+    min_gross_margin:   0.20
+    min_revenue_growth: -0.20
+  "Utilities":
+    min_gross_margin:   0.10
+    min_revenue_growth: -0.10
+  "Materials":
+    min_gross_margin:   0.20
+    min_revenue_growth: -0.15
+  "Basic Materials":
+    min_gross_margin:   0.20
+    min_revenue_growth: -0.15
+  "Information Technology":
+    min_gross_margin:   0.40
+    min_revenue_growth: -0.10
+  "Technology":
+    min_gross_margin:   0.40
+    min_revenue_growth: -0.10
+  "Communication Services":
+    min_gross_margin:   0.35
+    min_revenue_growth: -0.10
+  "Industrials":
+    min_gross_margin:   0.20
+    min_revenue_growth: -0.15
+  "Health Care":
+    min_gross_margin:   0.40
+    min_revenue_growth: -0.10
+  "Healthcare":
+    min_gross_margin:   0.40
+    min_revenue_growth: -0.10
+  "Financial Services":
+    min_gross_margin:   0.20
+    min_revenue_growth: -0.15
+  "Financials":
+    min_gross_margin:   0.20
+    min_revenue_growth: -0.15
+  "Consumer Discretionary":
+    min_gross_margin:   0.25
+    min_revenue_growth: -0.15
+  "Consumer Cyclical":
+    min_gross_margin:   0.25
+    min_revenue_growth: -0.15
+  "Consumer Staples":
+    min_gross_margin:   0.25
+    min_revenue_growth: -0.10
+  "Consumer Defensive":
+    min_gross_margin:   0.25
+    min_revenue_growth: -0.10
+  "Real Estate":
+    min_gross_margin:   0.30
+    min_revenue_growth: -0.10
+  "Unknown":
+    min_gross_margin:   0.15
+    min_revenue_growth: -0.20
+
+# ---------------------------------------------------------------------------
+# 원본 OBAF 병목 섹터 프리미엄 (원본 프레임워크 완전 보존)
+# ---------------------------------------------------------------------------
+bottleneck_premium_sectors:
+  - "Uranium"
+  - "Copper"
+  - "Transformers"
+  - "Grid Utilities"
+  - "Midstream Natural Gas"
+  - "Greenland REE"
+
+bottleneck_premium_multiplier: 1.5

@@ -1,0 +1,68 @@
+# =============================================================================
+# OBAF (Optimal Bottleneck Alpha Framework) — 시스템 설정
+# 민감 정보는 GitHub Actions Secrets → 환경변수로 주입
+# 형식: "${SECRET_NAME}"
+# =============================================================================
+
+telegram:
+  bot_token: "${TELEGRAM_BOT_TOKEN}"
+  chat_id:   "${TELEGRAM_CHAT_ID}"
+
+fred:
+  api_key: "${FRED_API_KEY}"        # https://fred.stlouisfed.org/docs/api/api_key.html
+
+sec:
+  user_agent: "${SEC_USER_AGENT}"   # 예: "MyFund admin@myfund.com" (SEC 필수 헤더)
+
+# ---------------------------------------------------------------------------
+# 데이터 파이프라인
+# ---------------------------------------------------------------------------
+pipeline:
+  price_period:       "1y"
+  price_interval:     "1d"
+  yfinance_threads:   true
+  sec_delay_seconds:  0.12          # SEC 가이드라인: 초당 최대 10회
+  max_retries:        5
+  initial_backoff:    2             # 지수 백오프 초기값(초)
+
+# ---------------------------------------------------------------------------
+# Phase 0 — VETO GATE 임계값
+# ---------------------------------------------------------------------------
+thresholds:
+  phase0:
+    min_cash_debt_ratio: 1.2        # T(-3) 현금/단기부채 비율
+    max_china_dep:       0.30       # T(-3) 중국 공급망 의존도 30% 한도
+
+  # Phase 2 — 밸류에이션·생존 임계값
+  phase2:
+    max_us10y:           4.5
+    oil_warn:            95.0
+    oil_crit:            110.0
+    max_geo_index:       75.0
+    min_risk_on_score:   40.0
+
+  # Phase 3 — 기술적 진입·안티포모 임계값
+  phase3:
+    anti_fomo_max_rsi:       70
+    anti_fomo_max_sma200_div: 0.40
+    core_entry_min_rsi:      40
+    core_entry_max_rsi:      50
+    core_entry_max_kdj_j:    20
+
+# ---------------------------------------------------------------------------
+# 다크풀 프록시 엔진 파라미터 (Q3-1 OHLCV 기반)
+# ---------------------------------------------------------------------------
+dark_pool:
+  vol_zscore_threshold:    1.5      # 달러볼륨 Z-score 기준
+  block_vol_multiple:      2.0      # 블록 거래 볼륨 배수
+  block_range_threshold:   0.005    # 블록 거래 가격 레인지 임계값 (0.5%)
+  dir_pressure_threshold:  0.6      # 방향성 압력 지수 기준
+  lookback_days:           20       # 기준 롤링 윈도우
+
+# ---------------------------------------------------------------------------
+# 출력 설정
+# ---------------------------------------------------------------------------
+output:
+  excel_dir: "reports"
+  log_dir:   "logs"
+  timezone:  "Asia/Seoul"

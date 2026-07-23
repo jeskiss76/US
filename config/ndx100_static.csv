@@ -1,0 +1,98 @@
+ticker,company,gics_sector,gics_sub_industry
+AAPL,Apple Inc,Information Technology,Technology Hardware Storage & Peripherals
+MSFT,Microsoft Corp,Information Technology,Systems Software
+NVDA,NVIDIA Corp,Information Technology,Semiconductors
+AMZN,Amazon.com Inc,Consumer Discretionary,Broadline Retail
+META,Meta Platforms Inc,Communication Services,Interactive Media & Services
+GOOGL,Alphabet Inc Cl A,Communication Services,Interactive Media & Services
+GOOG,Alphabet Inc Cl C,Communication Services,Interactive Media & Services
+TSLA,Tesla Inc,Consumer Discretionary,Automobile Manufacturers
+AVGO,Broadcom Inc,Information Technology,Semiconductors
+COST,Costco Wholesale Corp,Consumer Staples,Consumer Staples Merchandise Retail
+NFLX,Netflix Inc,Communication Services,Movies & Entertainment
+ASML,ASML Holding NV,Information Technology,Semiconductor Materials & Equipment
+TMUS,T-Mobile US Inc,Communication Services,Wireless Telecommunication Services
+AMD,Advanced Micro Devices Inc,Information Technology,Semiconductors
+QCOM,QUALCOMM Inc,Information Technology,Semiconductors
+ISRG,Intuitive Surgical Inc,Health Care,Health Care Equipment
+BKNG,Booking Holdings Inc,Consumer Discretionary,Hotels Resorts & Cruise Lines
+TXN,Texas Instruments Inc,Information Technology,Semiconductors
+INTU,Intuit Inc,Information Technology,Application Software
+AMGN,Amgen Inc,Health Care,Biotechnology
+PDD,PDD Holdings Inc,Consumer Discretionary,Broadline Retail
+AMAT,Applied Materials Inc,Information Technology,Semiconductor Materials & Equipment
+ARM,Arm Holdings plc,Information Technology,Semiconductors
+PANW,Palo Alto Networks Inc,Information Technology,Systems Software
+ADP,Automatic Data Processing Inc,Information Technology,Data Processing & Outsourced Services
+LRCX,Lam Research Corp,Information Technology,Semiconductor Materials & Equipment
+KLAC,KLA Corp,Information Technology,Semiconductor Materials & Equipment
+MELI,MercadoLibre Inc,Consumer Discretionary,Broadline Retail
+SBUX,Starbucks Corp,Consumer Discretionary,Restaurants
+MDLZ,Mondelez International Inc,Consumer Staples,Packaged Foods & Meats
+CDNS,Cadence Design Systems Inc,Information Technology,Application Software
+SNPS,Synopsys Inc,Information Technology,Application Software
+ADI,Analog Devices Inc,Information Technology,Semiconductors
+REGN,Regeneron Pharmaceuticals Inc,Health Care,Biotechnology
+GILD,Gilead Sciences Inc,Health Care,Biotechnology
+CSX,CSX Corp,Industrials,Railroads
+VRTX,Vertex Pharmaceuticals Inc,Health Care,Biotechnology
+CRWD,CrowdStrike Holdings Inc,Information Technology,Systems Software
+CTAS,Cintas Corp,Industrials,Diversified Support Services
+MRNA,Moderna Inc,Health Care,Biotechnology
+PCAR,PACCAR Inc,Industrials,Construction Machinery & Heavy Transportation Equipment
+ROP,Roper Technologies Inc,Information Technology,Application Software
+MCHP,Microchip Technology Inc,Information Technology,Semiconductors
+MAR,Marriott International Inc,Consumer Discretionary,Hotels Resorts & Cruise Lines
+ABNB,Airbnb Inc,Consumer Discretionary,Hotels Resorts & Cruise Lines
+IDXX,IDEXX Laboratories Inc,Health Care,Health Care Equipment
+PAYX,Paychex Inc,Information Technology,Data Processing & Outsourced Services
+WDAY,Workday Inc,Information Technology,Application Software
+ROST,Ross Stores Inc,Consumer Discretionary,Apparel Retail
+EXC,Exelon Corp,Utilities,Electric Utilities
+FTNT,Fortinet Inc,Information Technology,Systems Software
+CPRT,Copart Inc,Industrials,Diversified Support Services
+BIIB,Biogen Inc,Health Care,Biotechnology
+DXCM,DexCom Inc,Health Care,Health Care Equipment
+FAST,Fastenal Co,Industrials,Industrial Machinery & Supplies
+TEAM,Atlassian Corp,Information Technology,Application Software
+ON,ON Semiconductor Corp,Information Technology,Semiconductors
+ODFL,Old Dominion Freight Line Inc,Industrials,Air Freight & Logistics
+VRSK,Verisk Analytics Inc,Industrials,Research & Consulting Services
+EA,Electronic Arts Inc,Communication Services,Interactive Home Entertainment
+GEHC,GE HealthCare Technologies Inc,Health Care,Health Care Equipment
+CTSH,Cognizant Technology Solutions Corp,Information Technology,IT Consulting & Other Services
+DDOG,Datadog Inc,Information Technology,Systems Software
+MNST,Monster Beverage Corp,Consumer Staples,Soft Drinks & Non-alcoholic Beverages
+KDP,Keurig Dr Pepper Inc,Consumer Staples,Soft Drinks & Non-alcoholic Beverages
+XEL,Xcel Energy Inc,Utilities,Multi-Utilities
+KHC,Kraft Heinz Co,Consumer Staples,Packaged Foods & Meats
+CSGP,CoStar Group Inc,Real Estate,Real Estate Services
+ANSS,ANSYS Inc,Information Technology,Application Software
+LULU,Lululemon Athletica Inc,Consumer Discretionary,Apparel Accessories & Luxury Goods
+ZS,Zscaler Inc,Information Technology,Systems Software
+CCEP,Coca-Cola Europacific Partners plc,Consumer Staples,Soft Drinks & Non-alcoholic Beverages
+CEG,Constellation Energy Corp,Utilities,Electric Utilities
+TTWO,Take-Two Interactive Software Inc,Communication Services,Interactive Home Entertainment
+HON,Honeywell International Inc,Industrials,Industrial Conglomerates
+NXPI,NXP Semiconductors NV,Information Technology,Semiconductors
+DLTR,Dollar Tree Inc,Consumer Discretionary,General Merchandise Stores
+MU,Micron Technology Inc,Information Technology,Semiconductors
+WBD,Warner Bros Discovery Inc,Communication Services,Movies & Entertainment
+ILMN,Illumina Inc,Health Care,Life Sciences Tools & Services
+FANG,Diamondback Energy Inc,Energy,Oil & Gas Exploration & Production
+WBA,Walgreens Boots Alliance Inc,Consumer Staples,Drug Retail
+RIVN,Rivian Automotive Inc,Consumer Discretionary,Automobile Manufacturers
+LCID,Lucid Group Inc,Consumer Discretionary,Automobile Manufacturers
+MRVL,Marvell Technology Inc,Information Technology,Semiconductors
+GFS,GlobalFoundries Inc,Information Technology,Semiconductors
+PLTR,Palantir Technologies Inc,Information Technology,Systems Software
+TTD,Trade Desk Inc,Communication Services,Advertising
+SNOW,Snowflake Inc,Information Technology,Systems Software
+NET,Cloudflare Inc,Information Technology,Systems Software
+ZM,Zoom Video Communications Inc,Communication Services,Application Software
+OKTA,Okta Inc,Information Technology,Systems Software
+DOCU,DocuSign Inc,Information Technology,Application Software
+PYPL,PayPal Holdings Inc,Financials,Transaction & Payment Processing Services
+INTC,Intel Corp,Information Technology,Semiconductors
+SMCI,Super Micro Computer Inc,Information Technology,Technology Hardware Storage & Peripherals
+MDB,MongoDB Inc,Information Technology,Systems Software
