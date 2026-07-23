@@ -33,8 +33,8 @@ THIN = Side(border_style="thin", color=COLOR["BORDER"])
 BOX  = Border(left=THIN, right=THIN, top=THIN, bottom=THIN)
 ACTION_META = {
     "BUY_TARGET": {"label": "🚀 BUY",      "row": "BUY_ROW"},
-    "SELL_100":   {"label": "🔴 SELL 100%","row": "SELL_ROW"},
-    "SELL_50":    {"label": "🟠 SELL 50%", "row": "SELL_ROW"},
+    "SELL_100":   {"label": "🚨 SELL 100%","row": "SELL_ROW"},
+    "SELL_50":    {"label": "⚠️ SELL 50%", "row": "SELL_ROW"},
     "NO_ENTRY":   {"label": "⛔ NO ENTRY", "row": "NO_ENTRY_ROW"},
     "HOLD":       {"label": "⏸️ HOLD",      "row": "HOLD_ROW"},
 }
