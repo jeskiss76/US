@@ -264,7 +264,7 @@ class TelegramDispatcher:
 
         buy_orders  = [o for o in execution_orders.values() if o["action"] == "BUY_TARGET"]
         sell_100_orders = [o for o in execution_orders.values() if o["action"] == "SELL_100"]
-        sell_100_orders = [o for o in execution_orders.values() if o["action"] == "SELL_50"]
+        sell_50_orders = [o for o in execution_orders.values() if o["action"] == "SELL_50"]
         sell_orders = sell_100_orders + sell_50_orders
         hold_count  = sum(1 for o in execution_orders.values() if o["action"] == "HOLD")
         fomo_count  = sum(1 for o in execution_orders.values() if o["action"] == "NO_ENTRY")
