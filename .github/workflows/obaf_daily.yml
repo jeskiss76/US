@@ -1,0 +1,117 @@
+# =============================================================================
+# OBAF — GitHub Actions 일배치 스케줄러
+#
+# 실행 시간 (KST):
+#   - 08:00 KST = 23:00 UTC (전일)   → 프리마켓 전 스크리닝
+#   - 17:00 KST = 08:00 UTC          → 미국 프리마켓 중간 점검
+#   - 21:00 KST = 12:00 UTC          → 미국 정규장 개장 전 최종 점검
+#
+# 필수 GitHub Secrets (Settings → Secrets and variables → Actions):
+#   TELEGRAM_BOT_TOKEN  - Telegram Bot 토큰
+#   TELEGRAM_CHAT_ID    - Telegram 채팅 ID
+#   FRED_API_KEY        - FRED API 키 (https://fred.stlouisfed.org)
+#   SEC_USER_AGENT      - SEC EDGAR User-Agent (예: "MyFund admin@myfund.com")
+# =============================================================================
+
+name: 미국 주식스캐너
+
+on:
+  schedule:
+    # 08:00 KST = 23:00 UTC (전일)
+    - cron: "0 21 * * 0-4"
+    # 17:00 KST = 08:00 UTC
+    - cron: "0 7 * * 1-5"
+    # 21:00 KST = 12:00 UTC
+    - cron: "0 11 * * 1-5"
+
+  # 수동 실행 허용 (GitHub Actions UI → Run workflow)
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "수동 실행 사유"
+        required: false
+        default: "Manual trigger"
+
+jobs:
+  obaf-pipeline:
+    name: "OBAF 분석 파이프라인"
+    runs-on: ubuntu-latest
+    timeout-minutes: 120         # 최대 2시간 (전체 유니버스 처리 여유)
+
+    steps:
+      # ── 1. 코드 체크아웃 ──────────────────────────────────────────
+      - name: "📥 코드 체크아웃"
+        uses: actions/checkout@v4
+
+      # ── 2. Python 설정 ────────────────────────────────────────────
+      - name: "🐍 Python 3.11 설정"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      # ── 3. 의존성 설치 ────────────────────────────────────────────
+      - name: "📦 의존성 설치"
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # ── 4. 보고서 디렉토리 초기화 ───────────────────────────────
+      - name: "📁 출력 디렉토리 준비"
+        run: |
+          mkdir -p reports
+          mkdir -p logs
+
+      # ── 5. OBAF 파이프라인 실행 ───────────────────────────────────
+      - name: "🚀 OBAF 파이프라인 실행"
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
+          FRED_API_KEY:       ${{ secrets.FRED_API_KEY }}
+          SEC_USER_AGENT:     ${{ secrets.SEC_USER_AGENT }}
+        run: |
+          python main.py
+
+      # ── 6. Excel 보고서 아티팩트 저장 ───────────────────────────
+      - name: "💾 Excel 보고서 아티팩트 저장"
+        uses: actions/upload-artifact@v4
+        if: always()             # 실패해도 보고서가 있으면 저장
+        with:
+          name: "OBAF-Report-${{ github.run_number }}"
+          path: |
+            reports/*.xlsx
+          retention-days: 30     # 30일 보관
+
+      # ── 7. 로그 아티팩트 저장 ────────────────────────────────────
+      - name: "📋 실행 로그 저장"
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: "OBAF-Logs-${{ github.run_number }}"
+          path: |
+            logs/*.log
+          retention-days: 14
+
+      # ── 8. 실패 시 Telegram 오류 알림 ───────────────────────────
+      - name: "🔴 실패 알림 (Telegram)"
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python - <<'EOF'
+          import os, requests
+          token   = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+          chat_id = os.environ.get("TELEGRAM_CHAT_ID",   "")
+          if token and chat_id:
+              msg = (
+                  "🔴 <b>OBAF 파이프라인 오류</b>\n"
+                  f"Run #{os.environ.get('GITHUB_RUN_NUMBER','?')}\n"
+                  "GitHub Actions 로그를 확인하세요."
+              )
+              requests.post(
+                  f"https://api.telegram.org/bot{token}/sendMessage",
+                  json={"chat_id": chat_id, "text": msg, "parse_mode": "HTML"},
+                  timeout=10
+              )
+          EOF
