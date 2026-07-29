@@ -469,7 +469,7 @@ class TelegramDispatcher:
 
         lines = [
             f"<b>📡 미국 주식 스캐너 [US] </b> {now_str}",
-            f"<b>📊 대상 : S&P500 + NASDAQ100</b>",            
+            f"<b>🛰️ 대상 : S&P500 + NASDAQ100</b>",            
             "",
             "<b>【매크로 대시보드】</b>",
             f"  {macro_icon} Risk-On DashScore: <b>{dash_score:.1f}</b>",
