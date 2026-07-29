@@ -239,7 +239,11 @@ class MasterOBAFPipeline:
         # ── Step 7: 보고서 생성 + Telegram 발송 ───────────────────
         logger.info("[Step 7] 보고서 생성 + Telegram 발송")
         excel_path = self.excel.generate(
-            execution_orders, macro_data, dash_score, self.stats.data
+            execution_orders, macro_data, dash_score, self.stats.data,
+            gate_details=gate_details,
+            monthly_rsi_threshold=self.phase_m1.max_monthly_rsi,
+            core_entry_min_rsi=self.phase_m1.core_entry_min_rsi,
+            core_entry_max_rsi=self.phase_m1.core_entry_max_rsi,
         )
         self.telegram.dispatch_summary(
             execution_orders, macro_data, dash_score,
