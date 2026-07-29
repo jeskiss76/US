@@ -184,13 +184,23 @@ class ExcelReporter:
     # ------------------------------------------------------------------
     # Phase -1 월봉 RSI 게이트 — 검증용 Excel
     # ------------------------------------------------------------------
-    def generate_monthly_rsi_gate_report(self, gate_details: dict, threshold: float) -> str:
+    def generate_monthly_rsi_gate_report(
+        self, gate_details: dict, threshold: float,
+        core_entry_min_rsi: float = 40, core_entry_max_rsi: float = 50
+    ) -> str:
         """
         Phase -1(월봉 RSI 사전 필터) 결과를 검증할 수 있는 Excel 생성.
         전체 종목 수가 많으므로:
           - 통과(PASS) 종목이 1개 이상 있으면 → 통과 종목만 표시
           - 통과 종목이 0개이면 → 탈락(전체) 종목을 표시하여 원인을 검증 가능하게 함
         필터링 결과가 0건이어도 항상 생성된다.
+
+        통과 종목에 한해 일봉 RSI-14(daily_rsi)와 Phase 3 CORE ENTRY RSI 구간
+        (기본 40~50) 해당 여부(in_core_entry_band)를 함께 표기해, 월봉 게이트
+        통과 종목이 실제로 Phase 3 CORE ENTRY 조건까지 도달할 가능성이 있는지
+        바로 확인할 수 있게 한다. (월봉 RSI와 일봉 RSI는 서로 다른 시계열
+        지표이므로 상충되지 않으며, 이 컬럼은 그 사실을 데이터로 보여주기 위한
+        교차 검증용이다.)
         """
         now      = datetime.now(tz=KST)
         run_time = now.strftime("%Y-%m-%d %H:%M KST")
@@ -200,9 +210,11 @@ class ExcelReporter:
         all_rows = list(gate_details.values())
         passed   = [d for d in all_rows if d.get("pass")]
         rejected = [d for d in all_rows if not d.get("pass")]
+        core_entry_hits = [d for d in passed if d.get("in_core_entry_band")]
 
-        headers = ["티커", "회사명", "GICS 섹터", "월봉 RSI", "판정", "사유"]
-        widths  = [10, 25, 25, 12, 10, 70]
+        band_label = f"CORE ENTRY 구간({core_entry_min_rsi:g}~{core_entry_max_rsi:g})"
+        headers = ["티커", "회사명", "GICS 섹터", "월봉 RSI", "일봉 RSI", band_label, "판정", "사유"]
+        widths  = [10, 25, 25, 12, 12, 20, 10, 70]
 
         wb = Workbook()
         ws = wb.active
@@ -213,7 +225,10 @@ class ExcelReporter:
 
         if passed:
             ws.title = "월봉RSI 통과종목"
-            mode_label = f"통과 종목만 표시 ({len(all_rows)}개 중 {len(passed)}개 통과 → 통과분만 노출)"
+            mode_label = (
+                f"통과 종목만 표시 ({len(all_rows)}개 중 {len(passed)}개 통과 → 통과분만 노출)  |  "
+                f"통과 종목 중 일봉 RSI가 {band_label}에 해당: {len(core_entry_hits)}개"
+            )
             rows = sorted(passed, key=lambda d: _rsi_sort_key(d, 999.0))
         else:
             ws.title = "월봉RSI 탈락종목(전체)"
@@ -239,14 +254,26 @@ class ExcelReporter:
         ws.row_dimensions[2].height = 20
 
         for ri, d in enumerate(rows, 3):
-            is_pass = bool(d.get("pass"))
-            bg = COLOR["BUY_ROW"] if is_pass else COLOR["SELL_ROW"]
-            rsi_val = d.get("monthly_rsi")
+            is_pass    = bool(d.get("pass"))
+            in_band    = d.get("in_core_entry_band")
+            if is_pass and in_band:
+                bg = COLOR["MACRO_GOOD"]           # 월봉+일봉 조건 동시 충족 후보 → 강조
+            elif is_pass:
+                bg = COLOR["BUY_ROW"]
+            else:
+                bg = COLOR["SELL_ROW"]
+
+            monthly_rsi_val = d.get("monthly_rsi")
+            daily_rsi_val   = d.get("daily_rsi")
+            band_cell_val   = "해당" if in_band is True else ("미해당" if in_band is False else "N/A")
+
             row_vals = [
                 d.get("ticker", ""),
                 d.get("company", ""),
                 d.get("gics_sector", ""),
-                rsi_val if rsi_val is not None else "N/A",
+                monthly_rsi_val if monthly_rsi_val is not None else "N/A",
+                daily_rsi_val if daily_rsi_val is not None else "N/A",
+                band_cell_val,
                 "PASS" if is_pass else "REJECT",
                 d.get("reason", ""),
             ]
