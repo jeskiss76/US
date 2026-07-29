@@ -32,8 +32,8 @@ COLOR = {
 THIN = Side(border_style="thin", color=COLOR["BORDER"])
 BOX  = Border(left=THIN, right=THIN, top=THIN, bottom=THIN)
 ACTION_META = {
-    "BUY_TARGET": {"label": "🚀 BUY",      "row": "BUY_ROW"},
-    "SELL_100":   {"label": "🚨 SELL 100%","row": "SELL_ROW"},
+    "BUY_TARGET": {"label": "� BUY",      "row": "BUY_ROW"},
+    "SELL_100":   {"label": "� SELL 100%","row": "SELL_ROW"},
     "SELL_50":    {"label": "⚠️ SELL 50%", "row": "SELL_ROW"},
     "NO_ENTRY":   {"label": "⛔ NO ENTRY", "row": "NO_ENTRY_ROW"},
     "HOLD":       {"label": "⏸️ HOLD",      "row": "HOLD_ROW"},
@@ -79,8 +79,8 @@ class ExcelReporter:
             c.fill = _fill(bg); c.font = _bf(COLOR["HEADER_FONT"])
             c.alignment = _ctr(); c.border = BOX
 
-    def _write_orders(self, wb, orders, run_time):
-        ws = wb.active
+    def _write_orders(self, wb, orders, run_time, as_active=False):
+        ws = wb.active if as_active else wb.create_sheet("1. 매매 지시서")
         ws.title = "1. 매매 지시서"
         ws.freeze_panes = "A3"
         nc = len(self.COLS)
@@ -127,6 +127,74 @@ class ExcelReporter:
             ws.row_dimensions[ri].height = 18
 
         for ci, (_, _, w) in enumerate(self.COLS, 1):
+            ws.column_dimensions[get_column_letter(ci)].width = w
+
+    # ------------------------------------------------------------------
+    # Phase -1 월봉 RSI GATE 통과 종목 — 메인 리포트 시트
+    # ------------------------------------------------------------------
+    def _write_monthly_rsi_survivors(
+        self, wb, gate_details: dict, threshold: float,
+        core_entry_min_rsi: float = 40, core_entry_max_rsi: float = 50
+    ):
+        """
+        Phase -1(월봉 RSI 사전 필터) 통과 종목을 메인 리포트의 첫 시트에 표시한다.
+        (메인 리포트는 통과 종목이 1개 이상 있을 때만 생성되므로 이 시트는
+        항상 PASS 종목만 포함한다. 탈락 종목 전체 검증은 별도의
+        OBAF_MonthlyRSIGate_*.xlsx 파일에서 확인 가능하다.)
+        """
+        ws = wb.active
+        ws.title = "0. 월봉RSI 통과종목"
+
+        passed = sorted(
+            [d for d in gate_details.values() if d.get("pass")],
+            key=lambda d: d.get("monthly_rsi") if d.get("monthly_rsi") is not None else 999.0
+        )
+        core_entry_hits = [d for d in passed if d.get("in_core_entry_band")]
+        band_label = f"CORE ENTRY 구간({core_entry_min_rsi:g}~{core_entry_max_rsi:g})"
+
+        headers = ["티커", "회사명", "GICS 섹터", "월봉 RSI", "일봉 RSI", band_label]
+        widths  = [10, 25, 25, 12, 12, 20]
+        nc = len(headers)
+
+        ws.merge_cells(f"A1:{get_column_letter(nc)}1")
+        t = ws["A1"]
+        t.value = (
+            f"OBAF Phase -1 월봉 RSI GATE 통과 종목  |  기준: 월봉 RSI < {threshold}  |  "
+            f"총 {len(passed)}개 통과  |  이 중 {band_label} 해당: {len(core_entry_hits)}개"
+        )
+        t.fill = _fill(COLOR["TITLE_BG"])
+        t.font = Font(bold=True, color=COLOR["TITLE_FONT"], size=13)
+        t.alignment = _ctr()
+        ws.row_dimensions[1].height = 30
+
+        ws.freeze_panes = "A3"
+        for ci, h in enumerate(headers, 1):
+            c = ws.cell(row=2, column=ci, value=h)
+            c.fill = _fill(COLOR["HOLD_HEADER"]); c.font = _bf(COLOR["HEADER_FONT"])
+            c.alignment = _ctr(); c.border = BOX
+        ws.row_dimensions[2].height = 20
+
+        for ri, d in enumerate(passed, 3):
+            in_band = d.get("in_core_entry_band")
+            bg = COLOR["MACRO_GOOD"] if in_band else COLOR["BUY_ROW"]
+            monthly_rsi_val = d.get("monthly_rsi")
+            daily_rsi_val   = d.get("daily_rsi")
+            band_cell_val   = "해당" if in_band is True else ("미해당" if in_band is False else "N/A")
+            row_vals = [
+                d.get("ticker", ""),
+                d.get("company", ""),
+                d.get("gics_sector", ""),
+                monthly_rsi_val if monthly_rsi_val is not None else "N/A",
+                daily_rsi_val if daily_rsi_val is not None else "N/A",
+                band_cell_val,
+            ]
+            for ci, v in enumerate(row_vals, 1):
+                c = ws.cell(row=ri, column=ci, value=v)
+                c.fill = _fill(bg); c.border = BOX
+                c.alignment = _ctr()
+            ws.row_dimensions[ri].height = 18
+
+        for ci, w in enumerate(widths, 1):
             ws.column_dimensions[get_column_letter(ci)].width = w
 
     def _write_macro(self, wb, macro_data, dash_score):
@@ -291,14 +359,27 @@ class ExcelReporter:
         gc.collect()
         return filepath
 
-    def generate(self, execution_orders, macro_data, dash_score, pipeline_stats) -> str:
+    def generate(
+        self, execution_orders, macro_data, dash_score, pipeline_stats,
+        gate_details: dict | None = None, monthly_rsi_threshold: float = 30,
+        core_entry_min_rsi: float = 40, core_entry_max_rsi: float = 50
+    ) -> str:
         now      = datetime.now(tz=KST)
         run_time = now.strftime("%Y-%m-%d %H:%M KST")
         filename = f"OBAF_Report_{now.strftime('%Y%m%d_%H%M')}.xlsx"
         filepath = os.path.join(self.output_dir, filename)
 
         wb = Workbook()
-        self._write_orders(wb, execution_orders, run_time)
+        if gate_details:
+            # 0번 시트: Phase -1 월봉 RSI GATE 통과 종목
+            self._write_monthly_rsi_survivors(
+                wb, gate_details, monthly_rsi_threshold,
+                core_entry_min_rsi, core_entry_max_rsi
+            )
+            self._write_orders(wb, execution_orders, run_time, as_active=False)
+        else:
+            # gate_details 미전달 시 기존과 동일하게 매매 지시서를 첫 시트로 사용
+            self._write_orders(wb, execution_orders, run_time, as_active=True)
         self._write_macro(wb, macro_data, dash_score)
         self._write_pipeline(wb, pipeline_stats)
         wb.save(filepath)
@@ -384,16 +465,16 @@ class TelegramDispatcher:
         oil   = macro_data.get("CrudeOil", 0.0)
         geo   = macro_data.get("GeoIndex", 0.0)
 
-        macro_icon = "🟢" if dash_score >= 60 else ("🟡" if dash_score >= 40 else "🔴")
+        macro_icon = "�" if dash_score >= 60 else ("�" if dash_score >= 40 else "�")
 
         lines = [
-            f"<b>📡 OBAF 시스템 리포트</b>  <i>{now_str}</i>",
+            f"<b>� OBAF 시스템 리포트</b>  <i>{now_str}</i>",
             "",
             "<b>【매크로 대시보드】</b>",
             f"  {macro_icon} Risk-On DashScore: <b>{dash_score:.1f}</b>",
-            f"  📈 US10Y: {us10y:.2f}%",
-            f"  🛢 WTI: ${oil:.2f}",
-            f"  🌐 지정학 리스크: {geo:.1f}",
+            f"  � US10Y: {us10y:.2f}%",
+            f"  � WTI: ${oil:.2f}",
+            f"  � 지정학 리스크: {geo:.1f}",
             "",
             "<b>【파이프라인 결과】</b>",
             f"  유니버스: {pipeline_stats.get('phase0_in', 0)}개",
@@ -402,15 +483,15 @@ class TelegramDispatcher:
             f"  Phase2→3: {pipeline_stats.get('phase2_out', 0)}개",
             "",
             "<b>【매매 지시 요약】</b>",
-            f"  🚀 BUY     : {len(buy_orders)}개",
-            f"  🔴 SELL100 : {len(sell_100_orders)}개",
-            f"  🟠 SELL50  : {len(sell_50_orders)}개",
+            f"  � BUY     : {len(buy_orders)}개",
+            f"  � SELL100 : {len(sell_100_orders)}개",
+            f"  � SELL50  : {len(sell_50_orders)}개",
             f"  ⏸ HOLD    : {hold_count}개",
             f"  ⛔ NO ENTRY: {fomo_count}개",
         ]
 
         if buy_orders:
-            lines += ["", "<b>🚀 BUY 종목</b>"]
+            lines += ["", "<b>� BUY 종목</b>"]
             for o in buy_orders:
                 lines.append(
                     f"  • <b>{o['ticker']}</b> ({o['gics_sector']}) "
@@ -418,14 +499,14 @@ class TelegramDispatcher:
                 )
 
         #if sell_orders:
-        #    lines += ["", "<b>🔴 SELL 종목</b>"]
+        #    lines += ["", "<b>� SELL 종목</b>"]
         #    for o in sell_100_orders:
         #        lbl = "100%" if o["action"] == "SELL_100" else "50%"
         #        lines.append(f"  • <b>{o['ticker']}</b> SELL {lbl}")
 
         # sell 100% 종목만 출력
         if sell_100_orders:
-            lines += ["", "<b>🔴 SELL 100% 종목</b>"]
+            lines += ["", "<b>� SELL 100% 종목</b>"]
             for o in sell_100_orders:
                 lines.append(f"  • <b>{o['ticker']}</b> SELL 100%")
         
