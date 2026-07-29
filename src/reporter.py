@@ -468,7 +468,8 @@ class TelegramDispatcher:
         macro_icon = "🟢" if dash_score >= 60 else ("🟡" if dash_score >= 40 else "🔴")
 
         lines = [
-            f"<b>📡 미국 주식 스캐너 [US]</b> {now_str}",
+            f"<b>📡 미국 주식 스캐너 [US] </b> {now_str}",
+            f"<b>📊 대상 : S&P500 + NASDAQ100</b>",            
             "",
             "<b>【매크로 대시보드】</b>",
             f"  {macro_icon} Risk-On DashScore: <b>{dash_score:.1f}</b>",
@@ -477,10 +478,10 @@ class TelegramDispatcher:
             f"  🌐 지정학 리스크: {geo:.1f}",
             "",
             "<b>【파이프라인 결과】</b>",
-            f"  유니버스: {pipeline_stats.get('phase0_in', 0)}개",
-            f"  Phase0→1: {pipeline_stats.get('phase0_out', 0)}개",
-            f"  Phase1→2: {pipeline_stats.get('phase1_out', 0)}개",
-            f"  Phase2→3: {pipeline_stats.get('phase2_out', 0)}개",
+            f"  🗺️유니버스: {pipeline_stats.get('phase0_in', 0)}개",
+            f"  1️⃣Phase0→1: {pipeline_stats.get('phase0_out', 0)}개",
+            f"  2️⃣Phase1→2: {pipeline_stats.get('phase1_out', 0)}개",
+            f"  3️⃣Phase2→3: {pipeline_stats.get('phase2_out', 0)}개",
             "",
             "<b>【매매 지시 요약】</b>",
             f"  🚀 BUY     : {len(buy_orders)}개",
