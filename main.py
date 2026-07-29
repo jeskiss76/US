@@ -156,7 +156,9 @@ class MasterOBAFPipeline:
 
         # 필터링 결과와 무관하게(0건이어도) 항상 검증용 Excel 생성
         gate_report_path = self.excel.generate_monthly_rsi_gate_report(
-            gate_details, self.phase_m1.max_monthly_rsi
+            gate_details, self.phase_m1.max_monthly_rsi,
+            core_entry_min_rsi=self.phase_m1.core_entry_min_rsi,
+            core_entry_max_rsi=self.phase_m1.core_entry_max_rsi,
         )
         logger.info(f"월봉 RSI 게이트 검증 리포트: {gate_report_path}")
 
