@@ -468,7 +468,7 @@ class TelegramDispatcher:
         macro_icon = "🟢" if dash_score >= 60 else ("🟡" if dash_score >= 40 else "🔴")
 
         lines = [
-            f"<b>� OBAF 시스템 리포트</b>  <i>{now_str}</i>",
+            f"<b>📡 OBAF 시스템 리포트 [US]</b>  <i>{now_str}</i>",
             "",
             "<b>【매크로 대시보드】</b>",
             f"  {macro_icon} Risk-On DashScore: <b>{dash_score:.1f}</b>",
