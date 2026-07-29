@@ -153,7 +153,7 @@ class ExcelReporter:
         band_label = f"CORE ENTRY 구간({core_entry_min_rsi:g}~{core_entry_max_rsi:g})"
 
         headers = ["티커", "회사명", "GICS 섹터", "월봉 RSI", "일봉 RSI", band_label]
-        widths  = [10, 25, 25, 12, 12, 20]
+        widths  = [10, 25, 25, 12, 12, 40]
         nc = len(headers)
 
         ws.merge_cells(f"A1:{get_column_letter(nc)}1")
