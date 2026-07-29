@@ -32,8 +32,8 @@ COLOR = {
 THIN = Side(border_style="thin", color=COLOR["BORDER"])
 BOX  = Border(left=THIN, right=THIN, top=THIN, bottom=THIN)
 ACTION_META = {
-    "BUY_TARGET": {"label": "� BUY",      "row": "BUY_ROW"},
-    "SELL_100":   {"label": "� SELL 100%","row": "SELL_ROW"},
+    "BUY_TARGET": {"label": "🚀 BUY",      "row": "BUY_ROW"},
+    "SELL_100":   {"label": "🚨 SELL 100%","row": "SELL_ROW"},
     "SELL_50":    {"label": "⚠️ SELL 50%", "row": "SELL_ROW"},
     "NO_ENTRY":   {"label": "⛔ NO ENTRY", "row": "NO_ENTRY_ROW"},
     "HOLD":       {"label": "⏸️ HOLD",      "row": "HOLD_ROW"},
@@ -465,16 +465,16 @@ class TelegramDispatcher:
         oil   = macro_data.get("CrudeOil", 0.0)
         geo   = macro_data.get("GeoIndex", 0.0)
 
-        macro_icon = "�" if dash_score >= 60 else ("�" if dash_score >= 40 else "�")
+        macro_icon = "🟢" if dash_score >= 60 else ("🟡" if dash_score >= 40 else "🔴")
 
         lines = [
             f"<b>� OBAF 시스템 리포트</b>  <i>{now_str}</i>",
             "",
             "<b>【매크로 대시보드】</b>",
             f"  {macro_icon} Risk-On DashScore: <b>{dash_score:.1f}</b>",
-            f"  � US10Y: {us10y:.2f}%",
-            f"  � WTI: ${oil:.2f}",
-            f"  � 지정학 리스크: {geo:.1f}",
+            f"  📈 US10Y: {us10y:.2f}%",
+            f"  🛢 WTI: ${oil:.2f}",
+            f"  🌐 지정학 리스크: {geo:.1f}",
             "",
             "<b>【파이프라인 결과】</b>",
             f"  유니버스: {pipeline_stats.get('phase0_in', 0)}개",
@@ -483,15 +483,15 @@ class TelegramDispatcher:
             f"  Phase2→3: {pipeline_stats.get('phase2_out', 0)}개",
             "",
             "<b>【매매 지시 요약】</b>",
-            f"  � BUY     : {len(buy_orders)}개",
-            f"  � SELL100 : {len(sell_100_orders)}개",
-            f"  � SELL50  : {len(sell_50_orders)}개",
+            f"  🚀 BUY     : {len(buy_orders)}개",
+            f"  🔴 SELL100 : {len(sell_100_orders)}개",
+            f"  🟠 SELL50  : {len(sell_50_orders)}개",
             f"  ⏸ HOLD    : {hold_count}개",
             f"  ⛔ NO ENTRY: {fomo_count}개",
         ]
 
         if buy_orders:
-            lines += ["", "<b>� BUY 종목</b>"]
+            lines += ["", "<b>🚀 BUY 종목</b>"]
             for o in buy_orders:
                 lines.append(
                     f"  • <b>{o['ticker']}</b> ({o['gics_sector']}) "
@@ -499,14 +499,14 @@ class TelegramDispatcher:
                 )
 
         #if sell_orders:
-        #    lines += ["", "<b>� SELL 종목</b>"]
+        #    lines += ["", "<b>🔴 SELL 종목</b>"]
         #    for o in sell_100_orders:
         #        lbl = "100%" if o["action"] == "SELL_100" else "50%"
         #        lines.append(f"  • <b>{o['ticker']}</b> SELL {lbl}")
 
         # sell 100% 종목만 출력
         if sell_100_orders:
-            lines += ["", "<b>� SELL 100% 종목</b>"]
+            lines += ["", "<b>🔴 SELL 100% 종목</b>"]
             for o in sell_100_orders:
                 lines.append(f"  • <b>{o['ticker']}</b> SELL 100%")
         
