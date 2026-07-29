@@ -1,0 +1,14 @@
+{
+  "_comment": "OBAF 정적 블랙리스트 — CLARITY Act 2026 및 Special Measure 6 비준수 종목 수동 관리",
+  "last_updated": "2026-06-30",
+  "version": "1.0",
+
+  "special_measure_6": [
+  ],
+
+  "clarity_act_noncompliant": [
+  ],
+
+  "manual_veto": [
+  ]
+}
