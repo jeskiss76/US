@@ -17,12 +17,12 @@ name: 미국 주식스캐너
 
 on:
   schedule:
-    # 08:00 KST = 23:00 UTC (전일)
-    - cron: "0 21 * * 0-4"
+    # 08:00 KST = 23:00 UTC (전일) - (기존 주석의 21시 UTC 오타 수정)
+    - cron: "0 23 * * 0-4"
     # 17:00 KST = 08:00 UTC
-    - cron: "0 7 * * 1-5"
+    - cron: "0 8 * * 1-5"
     # 21:00 KST = 12:00 UTC
-    - cron: "0 11 * * 1-5"
+    - cron: "0 12 * * 1-5"
 
   # 수동 실행 허용 (GitHub Actions UI → Run workflow)
   workflow_dispatch:
