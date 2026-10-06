@@ -1,0 +1,21 @@
+name: Delete Old Workflow Runs
+
+on:
+  workflow_dispatch: # Actions 탭에서 수동 실행
+
+# 403 에러 해결을 위해 Actions 삭제 권한(write) 추가
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  del_runs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete workflow runs
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          retain_days: 0          # retain_minimum 대신 retain_days 사용
+          keep_minimum_runs: 0
